@@ -45,9 +45,9 @@ func init() {
 	zh_translations.RegisterDefaultTranslations(V, trans)
 }
 
-func Translate(errs validator.ValidationErrors) validateErrList {
+func Translate(errs error) validateErrList {
 	var errList validateErrList
-	for _, e := range errs {
+	for _, e := range errs.(validator.ValidationErrors) {
 		// can translate each error one at a time.
 		errList = append(errList, e.Translate(trans))
 	}
