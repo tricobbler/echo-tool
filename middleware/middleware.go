@@ -6,7 +6,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/maybgit/glog"
 	"github.com/spf13/cast"
-	r "github.com/tricobbler/echoTool/httpError"
+	r "github.com/tricobbler/echo-tool/httpError"
 	"runtime"
 )
 

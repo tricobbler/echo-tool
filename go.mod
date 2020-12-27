@@ -1,4 +1,4 @@
-module github.com/tricobbler/echoTool
+module github.com/tricobbler/echo-tool
 
 go 1.15
 
