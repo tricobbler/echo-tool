@@ -6,10 +6,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/maybgit/glog"
 	"github.com/spf13/cast"
-	r "github.com/tricobbler/echoHttpError"
-	"net/http"
+	r "github.com/tricobbler/echoTool/httpError"
 	"runtime"
-	"strings"
 )
 
 //校验渠道id和来源，并写入context
@@ -56,17 +54,17 @@ func MyRecover(config middleware.RecoverConfig) echo.MiddlewareFunc {
 			}
 
 			defer func() {
-				if r := recover(); r != nil {
-					err, ok := r.(error)
+				if rErr := recover(); rErr != nil {
+					err, ok := rErr.(error)
 					if !ok {
-						err = fmt.Errorf("%v", r)
+						err = fmt.Errorf("%v", rErr)
 					}
 					stack := make([]byte, config.StackSize)
 					length := runtime.Stack(stack, !config.DisableStackAll)
 					if !config.DisablePrintStack {
 						glog.Errorf("[PANIC RECOVER] %v %s\n", err, stack[:length])
 					}
-					c.Error(err)
+					r.NewDefaultHttpError()
 				}
 			}()
 			return next(c)
@@ -80,9 +78,9 @@ func MyErrorHandle() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			err := next(c)
 
-			if err != nil && strings.Contains(err.Error(), "rpc error") {
-				glog.Errorf("[GRPC内部调用错误]，%v，%v", c.Path(), err)
-				return r.NewHTTPError(http.StatusInternalServerError, "网络开小差了，请稍后重试")
+			if err != nil {
+				glog.Errorf("[内部错误]，%v，%v", c.Path(), err)
+				return r.NewDefaultHttpError()
 			}
 
 			return err

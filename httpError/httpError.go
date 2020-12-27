@@ -18,16 +18,22 @@ func NewHTTPError(code int, msg string) *httpError {
 	}
 }
 
+func NewDefaultHttpError() *httpError {
+	return NewHTTPError(http.StatusInternalServerError, DefaultError)
+}
+
 // Error makes it compatible with `error` interface.
 func (e *httpError) Error() string {
 	return e.Message
 }
 
+const DefaultError = "网络开小差了，请稍后重试"
+
 // httpErrorHandler customize echo's HTTP error handler.
 func HttpErrorHandler(err error, c echo.Context) {
 	var (
 		code = http.StatusInternalServerError
-		msg  = "ServerError"
+		msg  = DefaultError
 	)
 
 	if he, ok := err.(*httpError); ok {
