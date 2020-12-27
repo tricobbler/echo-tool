@@ -18,10 +18,6 @@ func NewHTTPError(code int, msg string) *httpError {
 	}
 }
 
-func NewDefaultHttpError() *httpError {
-	return NewHTTPError(http.StatusInternalServerError, DefaultError)
-}
-
 // Error makes it compatible with `error` interface.
 func (e *httpError) Error() string {
 	return e.Message
@@ -44,20 +40,21 @@ func HttpErrorHandler(err error, c echo.Context) {
 		msg = http.StatusText(code)
 	} else if c.Echo().Debug {
 		msg = err.Error()
-	} else {
-		msg = http.StatusText(code)
 	}
+	//} else {
+	//	msg = http.StatusText(code)
+	//}
 
 	if !c.Response().Committed {
 		if c.Request().Method == echo.HEAD {
 			err := c.NoContent(code)
 			if err != nil {
-				glog.Error(err)
+				glog.Error("ECHO HTTPERRORHANDLER ERROR：", err)
 			}
 		} else {
 			err := c.JSON(200, NewHTTPError(code, msg))
 			if err != nil {
-				glog.Error(err)
+				glog.Error("echo httperrorhandler error：", err)
 			}
 		}
 	}

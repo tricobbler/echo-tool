@@ -6,7 +6,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/maybgit/glog"
 	"github.com/spf13/cast"
-	r "github.com/tricobbler/echo-tool/httpError"
 	"runtime"
 )
 
@@ -64,7 +63,7 @@ func MyRecover(config middleware.RecoverConfig) echo.MiddlewareFunc {
 					if !config.DisablePrintStack {
 						glog.Errorf("[PANIC RECOVER] %v %s\n", err, stack[:length])
 					}
-					r.NewDefaultHttpError()
+					c.Error(err)
 				}
 			}()
 			return next(c)
@@ -80,7 +79,7 @@ func MyErrorHandle() echo.MiddlewareFunc {
 
 			if err != nil {
 				glog.Errorf("[内部错误]，%v，%v", c.Path(), err)
-				return r.NewDefaultHttpError()
+				c.Error(err)
 			}
 
 			return err
