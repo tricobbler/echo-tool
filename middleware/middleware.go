@@ -13,23 +13,6 @@ import (
 func Auth() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			//排除swagger文档
-			//if strings.Contains(c.Request().URL.Path, "/swagger/") {
-			//	return next(c)
-			//}
-			//
-			//p := struct {
-			//	ChannelId string `query:"channel_id" validate:"required" label:"渠道id"`
-			//	UserAgent string `query:"user_agent" validate:"required" label:"来源id"`
-			//}{
-			//	c.Request().Header.Get("channel_id"),
-			//	c.Request().Header.Get("user_agent"),
-			//}
-			//if err := c.Validate(p); err != nil {
-			//	err := validate.Translate(err.(validator.ValidationErrors))
-			//	return r.NewHTTPError(400, err.One())
-			//}
-
 			c.Set("channel_id", cast.ToInt32(c.Request().Header.Get("channel_id")))
 			c.Set("user_agent", cast.ToInt32(c.Request().Header.Get("user_agent")))
 			return next(c)
