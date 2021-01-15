@@ -1,12 +1,15 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
+	"runtime"
+	"strings"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/maybgit/glog"
 	"github.com/spf13/cast"
-	"runtime"
 )
 
 //校验渠道id和来源，并写入context
@@ -60,9 +63,9 @@ func MyErrorHandle() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			err := next(c)
 
-			if err != nil {
+			if err != nil && strings.Contains(err.Error(), "rpc error") {
 				glog.Errorf("[内部错误]，%v，%v", c.Path(), err)
-				c.Error(err)
+				c.Error(errors.New("内部错误"))
 			}
 
 			return err
