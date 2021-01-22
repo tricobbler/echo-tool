@@ -9,7 +9,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/maybgit/glog"
-	"github.com/spf13/cast"
+	"github.com/tricobbler/rp-kit/cast"
+	kit "github.com/tricobbler/rp-kit"
 )
 
 //校验渠道id和来源，并写入context
@@ -64,7 +65,9 @@ func MyErrorHandle() echo.MiddlewareFunc {
 			err := next(c)
 
 			if err != nil && strings.Contains(err.Error(), "rpc error") {
-				glog.Errorf("[内部错误]，%v，%v", c.Path(), err)
+				msg := "[内部错误]，"+c.Path()+"，"+err.Error()
+				glog.Error(msg)
+				kit.Alert(msg)
 				c.Error(errors.New("内部错误"))
 			}
 
